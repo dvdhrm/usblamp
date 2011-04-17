@@ -1,0 +1,38 @@
+= Dreamcheeky USB-Lamp Driver =
+  Userland driver for dreamcheeky usb lamp. This driver allows to
+  control the Dreamcheeky USB-Lamp via userspace on the command line. This
+  application takes as argument an RGB value and sets a specific or all
+  connected usblamps to this color.
+  Run the application without arguments to get usage information.
+
+  This application depens on "libusb". This library is available for different
+  platforms, including linux and Windows.
+  The shipped makefile is for UNIX systems. Windows users should compile this
+  program by hand. This shouldn't be too hard. Read the makefile carefully.
+
+= Install =
+  compilation: make
+  clean: make clean
+  install: make install (this installs with SETUID bit into /usr/bin)
+  uninstall: make uninstall (this removes /usr/bin/usblamp)
+
+= License =
+  This program and the related documentation is dedicated to the Public Domain.
+
+= Author =
+  David Herrmann - dh.herrmann@googlemail.com
+
+  This driver is written from scratch, however, reverse engineering
+  was done by Daniel Kaefer:
+    http://github.com/daniel-git/usblamp
+
+= Library =
+  The driver.h and driver.c files implement a clean driver API for the usblamp. You
+  may use these files to access the usblamps in your own application. However, it is
+  recommended to compile the main.c application and use the command line interface to
+  access the usblamps.
+
+= Device Information =
+  Information about the device can be obtained here:
+    http://www.dreamcheeky.com/download/68_product_manual_815%20Webmail%20Notifier%20Instruction%2009.07.22.pdf
+    http://www.dreamcheeky.com/download/MAIL_BOX_FRIENDS_ALERT_Setup.zip
