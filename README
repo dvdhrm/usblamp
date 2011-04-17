@@ -23,8 +23,16 @@
   David Herrmann - dh.herrmann@googlemail.com
 
   This driver is written from scratch, however, reverse engineering
-  was done by Daniel Kaefer:
+  was previously also done by Daniel Kaefer:
     http://github.com/daniel-git/usblamp
+  This driver uses an improved protocol over the one from Daniel Kaefer. This code
+  does not contain any code or information from the implementation of Daniel Kaefer,
+  however, the protocol information hints from Daniel Kaefer helped developing this
+  driver. Thanks!
+  The idea of this driver was inspired by the one from Daniel Kaefer, however, this
+  driver uses a plain C interface instead of C++ and does not use any deprecated
+  libusb-0.1 dependencies.
+  Use it at your own risk.
 
 = Library =
   The driver.h and driver.c files implement a clean driver API for the usblamp. You
