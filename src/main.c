@@ -59,7 +59,7 @@ static uint32_t parse_args(int argc, char **argv, size_t *id)
 			ret = ERGB_MAKE(0x0, 0x00, 0xff, 0xff);
 		}
 		else {
-			printf("Invalid arguments\n");
+			fprintf(stderr, "Invalid arguments\n");
 			ret = ERGB_MAKE(0xff, 0x0, 0x0, 0x0);
 		}
 	}
@@ -75,49 +75,50 @@ static uint32_t parse_args(int argc, char **argv, size_t *id)
 	}
 
 	if (ERGB_ERROR(ret)) {
-		printf("Usage: usblamp [color] [dev]\n");
-		printf("       usblamp [#red] [#green] [#blue] [dev]\n");
-		printf("\n");
-		printf("Written by David Herrmann, 2011\n");
-		printf("Dedicated to the Public Domain\n");
-		printf("\n");
-		printf("[dev] is an integer which specifies the device to operate on.\n");
-		printf("If it is 0 or 'all', then the operation is performed on all devices.\n");
-		printf("If the device with this id is no longer available, nothing is done.\n");
-		printf("Device numbers start at 1, not 0!\n");
-		printf("[dev] defaults to 0 if not given\n");
-		printf("\n");
-		printf("[#red], [#green] and [#blue] are interpreted as\n");
-		printf("hexadecimal values and converted into a 24bit RGB value.\n");
-		printf("Additional arguments are ignored.\n");
-		printf("\n");
-		printf("[color] is converted into RGB with:\n");
-		printf("  'off'     => 00 00 00 (default)\n");
-		printf("  'white'   => ff ff ff\n");
-		printf("  'red'     => ff 00 00\n");
-		printf("  'green'   => 00 ff 00\n");
-		printf("  'blue'    => 00 00 ff\n");
-		printf("  'yellow'  => ff ff 00\n");
-		printf("  'magenta' => ff 00 ff\n");
-		printf("  'cyan'    => 00 ff ff\n");
+		fprintf(stderr, "Usage: usblamp [color] [dev]\n");
+		fprintf(stderr, "       usblamp [#red] [#green] [#blue] [dev]\n");
+		fprintf(stderr, "\n");
+		fprintf(stderr, "Written by David Herrmann, 2011\n");
+		fprintf(stderr, "Dedicated to the Public Domain\n");
+		fprintf(stderr, "\n");
+		fprintf(stderr, "[dev] is an integer which specifies the device to operate on.\n");
+		fprintf(stderr, "If it is 0 or 'all', then the operation is performed on all devices.\n");
+		fprintf(stderr, "If the device with this id is no longer available, nothing is done.\n");
+		fprintf(stderr, "Device numbers start at 1, not 0!\n");
+		fprintf(stderr, "[dev] defaults to 0 if not given\n");
+		fprintf(stderr, "\n");
+		fprintf(stderr, "[#red], [#green] and [#blue] are interpreted as\n");
+		fprintf(stderr, "hexadecimal values and converted into a 24bit RGB value.\n");
+		fprintf(stderr, "Additional arguments are ignored.\n");
+		fprintf(stderr, "\n");
+		fprintf(stderr, "[color] is converted into RGB with:\n");
+		fprintf(stderr, "  'off'     => 00 00 00 (default)\n");
+		fprintf(stderr, "  'white'   => ff ff ff\n");
+		fprintf(stderr, "  'red'     => ff 00 00\n");
+		fprintf(stderr, "  'green'   => 00 ff 00\n");
+		fprintf(stderr, "  'blue'    => 00 00 ff\n");
+		fprintf(stderr, "  'yellow'  => ff ff 00\n");
+		fprintf(stderr, "  'magenta' => ff 00 ff\n");
+		fprintf(stderr, "  'cyan'    => 00 ff ff\n");
 	}
 	return ret;
 }
 
-static void handle_dev(struct usblamp_dev *dev, size_t index, uint32_t ergb)
+static int handle_dev(struct usblamp_dev *dev, size_t index, uint32_t ergb)
 {
 	if (0 != usblamp_choose(dev, index, false)) {
-		printf("Cannot open device\n");
-		return;
+		fprintf(stderr, "Cannot open device\n");
+		return EXIT_FAILURE;
 	}
 	if (0 != usblamp_init(dev)) {
-		printf("Cannot initialize device\n");
-		return;
+		fprintf(stderr, "Cannot initialize device\n");
+		return EXIT_FAILURE;
 	}
 	if (0 != usblamp_set(dev, ERGB_RED(ergb), ERGB_GREEN(ergb), ERGB_BLUE(ergb))) {
-		printf("Cannot configure device\n");
-		return;
+		fprintf(stderr, "Cannot configure device\n");
+		return EXIT_FAILURE;
 	}
+	return EXIT_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -125,6 +126,7 @@ int main(int argc, char **argv)
 	struct usblamp_dev *dev;
 	size_t i, num, id, matches;
 	uint32_t ergb;
+	int ret = EXIT_SUCCESS;
 
 	ergb = parse_args(argc, argv, &id);
 	if (ERGB_ERROR(ergb))
@@ -132,7 +134,7 @@ int main(int argc, char **argv)
 
 	dev = usblamp_open();
 	if (!dev) {
-		printf("Cannot open usb driver\n");
+		fprintf(stderr, "Cannot open usb driver\n");
 		return EXIT_FAILURE;
 	}
 
@@ -142,7 +144,8 @@ int main(int argc, char **argv)
 		if (usblamp_test(dev, i)) {
 			++matches;
 			if (!id || matches == id) {
-				handle_dev(dev, i, ergb);
+				if (handle_dev(dev, i, ergb) == EXIT_FAILURE)
+					ret = EXIT_FAILURE;
 				if (id)
 					break;
 			}
@@ -151,5 +154,5 @@ int main(int argc, char **argv)
 
 	usblamp_close(dev);
 
-	return EXIT_SUCCESS;
+	return ret;
 }
