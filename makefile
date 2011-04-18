@@ -4,7 +4,7 @@
 # Dedicated to the Public Domain
 #
 
-.PHONY: all clean install
+.PHONY: all clean install uninstall
 
 all:
 	gcc -Wall -O2 -o usblamp src/main.c src/driver.c `pkg-config --cflags --libs libusb-1.0`
