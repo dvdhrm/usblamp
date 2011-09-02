@@ -1,3 +1,14 @@
+= Warning =
+
+This driver uses an obsolete protocol. Newer linux-kernel releases contain an
+in-kernel driver for this USB-Lamp so this userspace driver is no longer needed.
+
+Please see:
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=blob;f=drivers/usb/misc/usbled.c;hb=HEAD
+
+This software package is no longer under development and no bugs are fixed.
+Please use the in-kernel driver.
+
 = Dreamcheeky USB-Lamp Driver =
   Userland driver for dreamcheeky usb lamp. This driver allows to
   control the Dreamcheeky USB-Lamp via userspace on the command line. This
